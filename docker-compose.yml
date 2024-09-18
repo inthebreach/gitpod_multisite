@@ -18,24 +18,29 @@ services:
       - db
     build: 
       context: .
-      dockerfile: ./.env/wp-dockerfile # WP-CLI and PHP extensions included
+      dockerfile: ./.env/wp-dockerfile
     container_name: gitpod-wpdev-wordpress
     ports:
       - '8000:80'
     restart: always
     volumes: 
       - ./wp-core:/var/www/html
-      - ./wp-content/plugins:/var/www/html/wp-content/plugins
-      - ./wp-content/themes:/var/www/html/wp-content/themes
+      - ./wp-content:/var/www/html/wp-content
       - ./.env/wp-apache-logs:/var/log/apache2
-      - ./php.ini:/usr/local/etc/php/conf.d/php.ini  # Link custom php.ini
+      - ./php.ini:/usr/local/etc/php/conf.d/php.ini
     environment:
       WORDPRESS_DB_HOST: db:3306
       WORDPRESS_DB_USER: wordpress
       WORDPRESS_DB_PASSWORD: wordpress
       WORDPRESS_CONFIG_EXTRA: |
         define('WP_ALLOW_MULTISITE', true);
-        
+        define('FS_METHOD', 'direct');
+
+    command: >
+      bash -c "mkdir -p /var/www/html/wp-content/uploads && \
+               chown -R www-data:www-data /var/www/html/wp-content/uploads && \
+               chmod -R 755 /var/www/html/wp-content/uploads && \
+               apache2-foreground"
 
   phpmyadmin:
     depends_on:
@@ -54,3 +59,4 @@ volumes:
   db-data:
   wp-apache-logs:
   pma-apache-logs:
+
