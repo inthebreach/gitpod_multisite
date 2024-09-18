@@ -5,10 +5,18 @@ RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli
     && chmod +x wp-cli.phar \
     && mv wp-cli.phar /usr/local/bin/wp
 
-# Install pdo_mysql PHP extension
+# Install necessary PHP extensions, including pdo_mysql
 RUN apt-get update && apt-get install -y libpng-dev libjpeg-dev libfreetype6-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install gd pdo pdo_mysql
 
-# Set permissions for www-data (web server user)
+# Create wp-content/uploads directory with proper permissions
+RUN mkdir -p /var/www/html/wp-content/uploads && \
+    chown -R www-data:www-data /var/www/html/wp-content/uploads && \
+    chmod -R 755 /var/www/html/wp-content/uploads
+
+# Set proper permissions for www-data
 RUN chown -R www-data:www-data /var/www/html
+
+# Copy custom php.ini if needed
+COPY php.ini /usr/local/etc/php/conf.d/
