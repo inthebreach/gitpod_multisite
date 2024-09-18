@@ -28,7 +28,7 @@ services:
       - ./wp-content/plugins:/var/www/html/wp-content/plugins
       - ./wp-content/themes:/var/www/html/wp-content/themes
       - ./.env/wp-apache-logs:/var/log/apache2
-      - ./custom-php.ini:/usr/local/etc/php/conf.d/custom-php.ini  # Link custom php.ini
+      - ./php.ini:/usr/local/etc/php/conf.d/php.ini  # Link custom php.ini
     environment:
       WORDPRESS_DB_HOST: db:3306
       WORDPRESS_DB_USER: wordpress
