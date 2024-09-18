@@ -35,11 +35,14 @@ services:
       WORDPRESS_CONFIG_EXTRA: |
         define('WP_ALLOW_MULTISITE', true);
         define('FS_METHOD', 'direct');
+        define('WP_HOME', '${GITPOD_WORKSPACE_URL}');
+        define('WP_SITEURL', '${GITPOD_WORKSPACE_URL}');
 
     command: >
       bash -c "mkdir -p /var/www/html/wp-content/uploads && \
                chown -R www-data:www-data /var/www/html/wp-content/uploads && \
                chmod -R 755 /var/www/html/wp-content/uploads && \
+               echo 'ServerName localhost' >> /etc/apache2/apache2.conf && \
                apache2-foreground"
 
   phpmyadmin:
