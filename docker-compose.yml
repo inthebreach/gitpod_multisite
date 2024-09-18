@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   db:
     image: mariadb:latest
@@ -16,7 +18,7 @@ services:
       - db
     build: 
       context: .
-      dockerfile: ./.env/wp-dockerfile #contains WP-CLI
+      dockerfile: ./.env/wp-dockerfile # WP-CLI and PHP extensions included
     container_name: gitpod-wpdev-wordpress
     ports:
       - '8000:80'
@@ -26,12 +28,19 @@ services:
       - ./wp-content/plugins:/var/www/html/wp-content/plugins
       - ./wp-content/themes:/var/www/html/wp-content/themes
       - ./.env/wp-apache-logs:/var/log/apache2
-      - ./php.ini:/usr/local/etc/php/conf.d/php.ini  # Link custom php.ini
-      - ./wp-content:/var/www/html/wp-content
+      - ./custom-php.ini:/usr/local/etc/php/conf.d/custom-php.ini  # Link custom php.ini
     environment:
       WORDPRESS_DB_HOST: db:3306
       WORDPRESS_DB_USER: wordpress
       WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_CONFIG_EXTRA: |
+        define('WP_ALLOW_MULTISITE', true);
+        define('MULTISITE', true);
+        define('SUBDOMAIN_INSTALL', false); # Change to true if using subdomains
+        define('DOMAIN_CURRENT_SITE', 'localhost');
+        define('PATH_CURRENT_SITE', '/');
+        define('SITE_ID_CURRENT_SITE', 1);
+        define('BLOG_ID_CURRENT_SITE', 1);
 
   phpmyadmin:
     depends_on:
@@ -44,7 +53,7 @@ services:
       - ./.env/pma-apache-logs:/var/log/apache2
     environment:
       PMA_HOST: db
-      MYSQL_ROOT_PASSWORD: password 
+      MYSQL_ROOT_PASSWORD: password
       
 volumes:
   db-data:
